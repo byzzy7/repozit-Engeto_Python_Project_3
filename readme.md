@@ -20,4 +20,5 @@ Tento projekt je součástí Engeto Online Python Akademie. Cílem je stáhnout 
 
 1. Naklonujte tento repozitář:
    ```bash
-   git clone https://github.com/byzzy7/projekt_3.git
+   https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8101
+   vysledky_opava.csv
