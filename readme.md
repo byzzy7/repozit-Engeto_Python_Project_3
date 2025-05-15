@@ -4,8 +4,7 @@ Tento projekt je součástí Engeto Online Python Akademie. Cílem je stáhnout 
 
 Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.10. – 21.10.2017 (promítnuto usnesení NSS)
 
-![Image](https://github.com/user-attachments/assets/9e5c252a-8e1f-4a26-b944-8d6ceb443a5e)
-![Image](https://github.com/user-attachments/assets/2bce43cb-9a3e-484d-a6b5-41615c4931f8)
+![Image](https://github.com/user-attachments/assets/86c0ddde-dec4-49b9-8ab0-0775b7264b3b)
 
 ## Struktura projektu
 
