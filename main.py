@@ -4,7 +4,6 @@ projekt_3.py: třetí projekt do Engeto Online Python Akademie
 author: Lukáš Bystroň
 email: lbystron@gmail.com
 """
-from os import linesep, write
 
 import requests
 import csv
@@ -29,7 +28,6 @@ elif args_count < 2:
 print(f"Stahuji data z vybraného url: {url}")
 
 #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"
-#url_2 = "https://www.volby.cz/pls/ps2017nss/"
 
 def download_www():
     """
@@ -49,70 +47,53 @@ def find_table(soup):
     table = soup.find_all("table", {"class": "table"})
     return table
 
-def kod_obce(table):
-    rr = []
-    kk = table.find_all("td", {"class": "cislo"})
+def kod_nazev_obce(table):
+    rr = {}
+    kk = table.find_all("tr")
     for i in kk:
-        tt = i.get_text().strip()
-        rr.append(tt)
+        kod = i.find("td", {"class": "cislo"})
+        nazev = i.find("td", {"class": "overflow_name"})
+        rr[kod, nazev] = i
     return rr
 
-
-def nazev_obce(table):
-    ff = []
-    overflow_name = table.find_all("td", {"class": "overflow_name"})
-    for i in overflow_name:
-        ff.append(i.text.strip())
-    return ff
-
-def detail_obce(kod, url):
-    urls = []
-    for i in kod:
-        urls.append(f"{url}ps311?xjazyk=CZ&xkraj=14&xobec={i}&xvyber=8105")
-    return urls
-
 def volici_v_seznamu():
+    seznam = {}
     tt = "https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec=512974&xvyber=8105"
     odpoved = requests.get(tt)
     soup = BeautifulSoup(odpoved.text, features="html.parser")
-    voli = soup.find("td", {"headers": "sa2"})
-    obalky = soup.find("td", {"headers": "sa3"})
-    hlasy = soup.find("td", {"headers": "sa6"})
-    volici = []
-    for i in voli:
-        volici.append(i)
-        for y in obalky:
-            volici.append(y)
-            for r in hlasy:
-                volici.append(r)
-
-
-    return volici
+    kk = soup.find_all("td")
+    for i in kk:
+        volici = i.find("td", {"headers": "sa2"})
+        obalky = i.find("td", {"headers": "sa3"})
+        hlasy = i.find("td", {"headers": "sa6"})
+        seznam[volici, obalky, hlasy] = i
+    return seznam
 
 def strany ():
     tt = "https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec=512974&xvyber=8105"
     odpoved = requests.get(tt)
     soup = BeautifulSoup(odpoved.text, features="html.parser")
     strana = []
-    strany = soup.find("td", {"class": "overflow_name"})
+    strany = soup.find_all("td", {"class": "overflow_name"})
     for o in strany:
-        strana.append(o)
+        strana.append(o.text.strip())
     return strana
 
 def vytvor_csv():
-    xx = kod_obce(download_www())
-    ff = nazev_obce(download_www())
+    xx = kod_nazev_obce(download_www())
     #tt = detail_obce(xx, url_2)
     zz = volici_v_seznamu()
     rr = strany()
 
+
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
-        file.write("code")
-        for i in xx:
-            file.write("\n" + i)
+        writer = csv.writer(file)
+        writer.writerow(zz)
         print("Ukočuji web scraping")
 
-vytvor_csv()
+if __name__ == '__main__':
+    #spuštění programu
+    vytvor_csv()
 
 
