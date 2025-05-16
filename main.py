@@ -12,20 +12,20 @@ import sys
 import argparse
 
 parser = argparse.ArgumentParser(
-    description="Web scraping. ČR volby 2017"
+    prog=f"Web scraping. ČR volby 2017"
 )
 parser.add_argument(
     "url", type=str, help="Stahuji data z vybraného url:"
 )
+parser.add_argument(
+    "vysledky_opava.csv", help="Ukladaní dat do csv:"
+)
 args = parser.parse_args()
 url = args.url
-if (args_count := len(sys.argv)) > 2:
-    print(f"One argument expected, got {args_count - 1}")
-    raise SystemExit(2)
-elif args_count < 2:
-    print("You must specify the target directory")
-    raise SystemExit(2)
-print(f"Stahuji data z vybraného url: {url}")
+if args.url == 2:
+    print("Špatný argument")
+else:
+    print(f"Stahuji data z vybraneho url: {url}")
 
 #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"
 
