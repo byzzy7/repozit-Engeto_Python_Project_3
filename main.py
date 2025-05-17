@@ -58,9 +58,9 @@ def kod_nazev_obce(table):
             rr[kod.text.strip(), nazev.text.strip()] = kod
     return rr
 
-def volici_v_seznamu():
+def volici_v_seznamu(cislo):
     seznam = {}
-    tt = "https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec=512974&xvyber=8105"
+    tt = f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec={cislo}&xvyber=8105"
     odpoved = requests.get(tt)
     soup = BeautifulSoup(odpoved.text, features="html.parser")
     kk = soup.find_all("td")
@@ -84,14 +84,17 @@ def strany ():
 def vytvor_csv():
     xx = kod_nazev_obce(download_www())
     #tt = detail_obce(xx, url_2)
-    zz = volici_v_seznamu()
+    zz = volici_v_seznamu(list(xx)[0])
     rr = strany()
 
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(xx)
+        writer.writerow([" "] * 2 + rr)
+        writer.writerow(list(xx)[0])
+        writer.writerow(list(xx)[1])
+        writer.writerow(zz)
         print("Ukočuji web scraping")
 
 if __name__ == '__main__':
