@@ -65,19 +65,19 @@ def volici_v_seznamu(cislo):
     Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
     Bělá - 559 , 379, 375
     '''
+    ee = list(cislo)
     seznam = {}
-    ff = ""
-    for i in range(len(cislo[0])):
-        tt = f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec={i}&xvyber=8105"
-        ff = tt
-    odpoved = requests.get(str(ff))
-    soup = BeautifulSoup(odpoved.text, features="html.parser")
-    kk = soup.find_all("td")
-    for i in kk:
-        volici = i.find("td", {"headers": "sa2"})
-        obalky = i.find("td", {"headers": "sa3"})
-        hlasy = i.find("td", {"headers": "sa6"})
-        seznam[volici, obalky, hlasy] = i
+
+    for i in range(len(ee)):
+        tt = f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec={int(ee[i][0])}&xvyber=8105"
+        odpoved = requests.get(str(tt))
+        soup = BeautifulSoup(odpoved.text, features="html.parser")
+        kk = soup.find_all("tr")
+        for i in kk:
+            volici = i.find("td", {"headers": "sa2"})
+            obalky = i.find("td", {"headers": "sa3"})
+            hlasy = i.find("td", {"headers": "sa6"})
+            seznam[volici, obalky, hlasy] = i
     return seznam
 
 def strany ():
@@ -92,7 +92,7 @@ def strany ():
 
 def vytvor_csv():
     xx = kod_nazev_obce(download_www())
-    zz = volici_v_seznamu(list(xx)[0])
+    zz = volici_v_seznamu(xx)
     rr = strany()
 
     print("Ukladam do souboru: vysledky_opava.csv")
@@ -101,12 +101,11 @@ def vytvor_csv():
         #hlavička tabulky
         writer.writerow(["Kód obce"] + ["Název obce"] +
                         ["Voliči v seznamu"] +
-                        ["Vydané obalky"] + ["Platné hlasy"] + rr)
+                        ["Vydané obálky"] + ["Platné hlasy"] + rr)
         #kód a název obce
         for i in range(len(xx)):
-            writer.writerow(list(xx)[int(i)])
+            writer.writerow(list(xx)[int(i)] + list(zz)[int(i)+1])
         #volici, obalky, hlasy
-        writer.writerow(zz)
         print("Ukočuji web scraping")
 
 if __name__ == '__main__':
