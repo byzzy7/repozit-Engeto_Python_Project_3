@@ -27,7 +27,7 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
 
 1. Zkopirujte tento odkaz:
    ```bash
-   python3 main.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8101" "vysledky_opava.csv"
+   python3 main.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105" "vysledky_opava.csv"
    
 ## Zdroje
 **ENGETO**
