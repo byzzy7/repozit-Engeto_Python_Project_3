@@ -11,8 +11,9 @@ from bs4 import BeautifulSoup
 import sys
 import argparse
 
+
 parser = argparse.ArgumentParser(
-    prog=f"Web scraping. ČR volby 2017"
+    prog="Web scraping. ČR volby 2017"
 )
 parser.add_argument(
     "url", type=str, help="Stahuji data z vybraného url:"
@@ -53,7 +54,8 @@ def kod_nazev_obce(table):
     for i in kk:
         kod = i.find("td", {"class": "cislo"})
         nazev = i.find("td", {"class": "overflow_name"})
-        rr[kod, nazev] = i
+        if kod and nazev:  # Kontrola, zda byly nalezeny hodnoty
+            rr[kod.text.strip(), nazev.text.strip()] = kod
     return rr
 
 def volici_v_seznamu():
@@ -89,7 +91,7 @@ def vytvor_csv():
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(zz)
+        writer.writerow(xx)
         print("Ukočuji web scraping")
 
 if __name__ == '__main__':
