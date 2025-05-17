@@ -28,8 +28,6 @@ if args.url == 2:
 else:
     print(f"Stahuji data z vybraneho url: {url}")
 
-#url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"
-
 def download_www():
     """
     Stáhne obsah webové stránky a vrátí BeautifulSoup objekt.
@@ -49,6 +47,10 @@ def find_table(soup):
     return table
 
 def kod_nazev_obce(table):
+    '''
+    Nalezení Kódu obce a názevu obce.
+    551929 - Andělská Hora
+    '''
     rr = {}
     kk = table.find_all("tr")
     for i in kk:
@@ -59,9 +61,16 @@ def kod_nazev_obce(table):
     return rr
 
 def volici_v_seznamu(cislo):
+    '''
+    Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
+    Bělá - 559 , 379, 375
+    '''
     seznam = {}
-    tt = f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec={cislo}&xvyber=8105"
-    odpoved = requests.get(tt)
+    ff = ""
+    for i in range(len(cislo[0])):
+        tt = f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec={i}&xvyber=8105"
+        ff = tt
+    odpoved = requests.get(str(ff))
     soup = BeautifulSoup(odpoved.text, features="html.parser")
     kk = soup.find_all("td")
     for i in kk:
@@ -83,15 +92,15 @@ def strany ():
 
 def vytvor_csv():
     xx = kod_nazev_obce(download_www())
-    #tt = detail_obce(xx, url_2)
     zz = volici_v_seznamu(list(xx)[0])
     rr = strany()
-
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow([" "] * 2 + rr)
+        writer.writerow(["Kód obce"] + ["Název obce"] +
+                        ["Voliči v seznamu"] +
+                        ["Vydané obalky"] + ["Platné hlasy"] + rr)
         writer.writerow(list(xx)[0])
         writer.writerow(list(xx)[1])
         writer.writerow(zz)
