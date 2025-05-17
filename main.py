@@ -98,11 +98,14 @@ def vytvor_csv():
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
+        #hlavička tabulky
         writer.writerow(["Kód obce"] + ["Název obce"] +
                         ["Voliči v seznamu"] +
                         ["Vydané obalky"] + ["Platné hlasy"] + rr)
-        writer.writerow(list(xx)[0])
-        writer.writerow(list(xx)[1])
+        #kód a název obce
+        for i in range(len(xx)):
+            writer.writerow(list(xx)[int(i)])
+        #volici, obalky, hlasy
         writer.writerow(zz)
         print("Ukočuji web scraping")
 
