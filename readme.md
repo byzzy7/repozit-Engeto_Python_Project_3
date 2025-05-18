@@ -20,7 +20,6 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
   - `requests` - Pro stahování obsahu webových stránek.
   - `BeautifulSoup` (z balíčku `beautifulsoup4`) - Pro analýzu HTML.
   - `csv` - Pro práci s CSV soubory.
-  - `sys` - 
   - `argparse` - Rozhraní pro příkazovou řádku.
 
 ## Spouštění programu

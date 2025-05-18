@@ -8,7 +8,6 @@ email: lbystron@gmail.com
 import requests
 import csv
 from bs4 import BeautifulSoup
-import sys
 import argparse
 
 
@@ -56,7 +55,7 @@ def kod_nazev_obce(table):
     for i in kk:
         kod = i.find("td", {"class": "cislo"})
         nazev = i.find("td", {"class": "overflow_name"})
-        if kod and nazev:  # Kontrola, zda byly nalezeny hodnoty
+        if kod and nazev:
             rr[kod.text.strip(), nazev.text.strip()] = kod
     return rr
 
@@ -77,20 +76,30 @@ def volici_v_seznamu(cislo):
             volici = i.find("td", {"headers": "sa2"})
             obalky = i.find("td", {"headers": "sa3"})
             hlasy = i.find("td", {"headers": "sa6"})
-            seznam[volici, obalky, hlasy] = i
+            if volici and obalky and hlasy:
+                seznam[volici.text.strip(), obalky.text.strip(), hlasy.text.strip()] = i
     return seznam
 
 def strany ():
+    '''
+    Najde seznam názvu volební strany a celkový počet platných hlasů
+    '''
     tt = "https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec=512974&xvyber=8105"
     odpoved = requests.get(tt)
     soup = BeautifulSoup(odpoved.text, features="html.parser")
-    strana = []
-    strany = soup.find_all("td", {"class": "overflow_name"})
+    strana = {}
+    strany = soup.find_all("tr")
     for o in strany:
-        strana.append(o.text.strip())
+        pp = o.find("td", {"class": "overflow_name"})
+        ll = o.find("td", {"headers": "t1sa2 t1sb3"})
+        if pp and ll:
+            strana[pp.text.strip(), ll.text.strip()] = o
     return strana
 
 def vytvor_csv():
+    '''
+    Vytvoří csv soubor
+    '''
     xx = kod_nazev_obce(download_www())
     zz = volici_v_seznamu(xx)
     rr = strany()
@@ -101,11 +110,9 @@ def vytvor_csv():
         #hlavička tabulky
         writer.writerow(["Kód obce"] + ["Název obce"] +
                         ["Voliči v seznamu"] +
-                        ["Vydané obálky"] + ["Platné hlasy"] + rr)
-        #kód a název obce
+                        ["Vydané obálky"] + ["Platné hlasy"] + list(rr))
         for i in range(len(xx)):
-            writer.writerow(list(xx)[int(i)] + list(zz)[int(i)+1])
-        #volici, obalky, hlasy
+            writer.writerow(list(xx)[int(i)] + list(zz)[int(i)])
         print("Ukočuji web scraping")
 
 if __name__ == '__main__':
