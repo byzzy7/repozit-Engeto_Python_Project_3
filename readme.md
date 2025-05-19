@@ -4,10 +4,13 @@ Tento projekt je součástí Engeto Online Python Akademie. Cílem je stáhnout 
 
 Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.10. – 21.10.2017
 
-![Image](https://github.com/user-attachments/assets/750799e5-004e-41cb-8700-d8a2eb42aeab)
+![Image](https://github.com/user-attachments/assets/0619e05f-4d89-4d15-b7e2-d21969f3b67b)
+
+## Ukázka projektu
+  1. argument: `"https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"`
+  2. argument: `"vysledky_opava.csv"`
 
 ## Struktura projektu
-
 - `main.py` - Hlavní skript pro stažení a zpracování dat.
 - `vysledky_opava.csv` - Výstupní soubor obsahující zpracovaná data.
 - `requirements.txt` - Seznam závislostí potřebných pro spuštění projektu.
@@ -24,10 +27,19 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
 
 ## Spouštění programu
 
-1. Zkopirujte tento odkaz:
+Spuštění souboru main.py v rámci přikázového řádku požaduje 2 argumenty.
    ```bash
    python3 main.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105" "vysledky_opava.csv"
-   
+   ```
+Následně se Vám stáhnou výsledky jako soubor s příponou ``.csv``.
+
+## Průběh stahování
+`Stahuji data z vybraneho URL: https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105`
+
+`ukladam do souboru: vysledky_opava.csv`
+
+`ukoncuji main.py`
+
 ## Zdroje
 **ENGETO**
 
