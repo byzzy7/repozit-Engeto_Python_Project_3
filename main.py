@@ -39,7 +39,7 @@ def download_www():
 
 def find_table(soup):
     """
-    Najde tabulku v BeautifulSoup objektu a vrátí ji.
+    Najde tabulku.
     """
     # Najít tabulku
     table = soup.find_all("table", {"class": "table"})
@@ -56,57 +56,69 @@ def stranky_webu(cislo):
     '''
     vsechny_radky = []
 
-    for i in range(len(list(cislo))):
+    for obec in cislo:
         stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec="
-              f"{int(list(cislo)[i][0])}&xvyber=8105")
+              f"{int(obec["Kód obce"])}&xvyber=8105")
         odpoved = requests.get(stranka_webu)
         soup = BeautifulSoup(odpoved.text, features="html.parser")
         vsechny_tr = soup.find_all("tr")
         vsechny_radky.extend(vsechny_tr)
     return vsechny_radky
 
-def kod_nazev_obce(table) -> dict:
+def kod_nazev_obce(table):
     '''
     Nalezení Kódu obce a názevu obce.
     551929 - Andělská Hora
     '''
-    kod_nazev_obce = {}
+    kod_nazev_obce = []
 
     vsechny_tr = table.find_all("tr")
-    for i in vsechny_tr:
-        kod_obce = i.find("td", {"class": "cislo"})
-        nazev_obce = i.find("td", {"class": "overflow_name"})
+    for radek in vsechny_tr:
+        kod_obce = radek.find("td", {"class": "cislo"})
+        nazev_obce = radek.find("td", {"class": "overflow_name"})
+
         if kod_obce and nazev_obce:
-            kod_nazev_obce[kod_obce.text.strip(), nazev_obce.text.strip()] = i
+            kod_nazev_obce.append({
+                "Kód obce": kod_obce.text.strip(),
+                "Název obce": nazev_obce.text.strip(),
+            })
     return kod_nazev_obce
 
-def volici_v_seznamu(stranka) -> dict:
+def volici_v_seznamu(stranka):
     '''
     Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
     Bělá - 559 , 379, 375
     '''
-    seznam = {}
+    seznam = []
 
-    for i in stranka:
-        volici_seznam = i.find("td", {"headers": "sa2"})
-        vydane_obalky = i.find("td", {"headers": "sa3"})
-        platne_hlasy = i.find("td", {"headers": "sa6"})
+    for radek in stranka:
+        volici_seznam = radek.find("td", {"headers": "sa2"})
+        vydane_obalky = radek.find("td", {"headers": "sa3"})
+        platne_hlasy = radek.find("td", {"headers": "sa6"})
+
         if volici_seznam and vydane_obalky and platne_hlasy:
-            seznam[volici_seznam.text.strip(), vydane_obalky.text.strip(),
-            platne_hlasy.text.strip()] = i
+            seznam.append({
+                "Voliči v seznamu": volici_seznam.text.strip(),
+                "Vydané obálky": vydane_obalky.text.strip(),
+                "Platné hlasy": platne_hlasy.text.strip(),
+            })
     return seznam
 
-def strany (stranka)-> dict:
+def strany (stranka):
     '''
     Najde seznam názvu volební strany a celkový počet platných hlasů
     '''
-    strana = {}
+    strana = []
 
-    for i in stranka:
-        nazev_strany = i.find("td", {"class": "overflow_name"})
-        hlasy_celkem = i.find("td", {"headers": "t1sa2 t1sb3"})
-        if nazev_strany and hlasy_celkem:
-            strana[nazev_strany.text.strip(), hlasy_celkem.text.strip()] = i
+    for radek in stranka:
+        nazev_strany = radek.find("td", {"class": "overflow_name"})
+        hlasy_strany = radek.find("td", {"headers": "t1sa2 t1sb3"})
+
+        if nazev_strany and hlasy_strany:
+            strana.append({
+                "Název strany": nazev_strany.text.strip(),
+                "Hlasy strany": hlasy_strany.text.strip(),
+            })
     return strana
 
 def vytvor_csv():
@@ -119,17 +131,21 @@ def vytvor_csv():
     kandidati = strany(otaceni_stranek)
 
     print("Ukladam do souboru: vysledky_opava.csv")
-    with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
+    with (open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file):
         writer = csv.writer(file)
-        writer.writerow(["Kód obce"] + ["Název obce"] +
+        hlavicka = (["Kód obce"] + ["Název obce"] +
                         ["Voliči v seznamu"] +
                         ["Vydané obálky"] + ["Platné hlasy"])
-        for row in range(len(vyber_uzemi)):
-            writer.writerow(list(vyber_uzemi)[int(row)] + list(vyber_obce)[int(row)] + list(kandidati)[1])
+        writer.writerow(hlavicka)
+        for uzemi in vyber_uzemi:
+            writer.writerow(uzemi.values())
+        for obec in vyber_obce:
+            writer.writerow(obec.values())
+        for hlasy in kandidati:
+            writer.writerow(hlasy.values())
         print("Ukočuji web scraping")
 
 if __name__ == '__main__':
     #spuštění programu
     vytvor_csv()
-
 
