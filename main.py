@@ -45,9 +45,10 @@ def find_table(soup):
     table = soup.find_all("table", {"class": "table"})
     return table
 
-def stranky_webu(cislo):
+def stranky_webu(cislo) -> list:
     '''
-    prohledává všechny stránky webu
+    otáčí všechny stránky obci.
+    "int(obec["Kód obce"])" - cislo obce
     Běla ......... X
     Bohuslavice .. X
     ..
@@ -65,7 +66,7 @@ def stranky_webu(cislo):
         vsechny_radky.extend(vsechny_tr)
     return vsechny_radky
 
-def kod_nazev_obce(table):
+def kod_nazev_obce(table) -> list:
     '''
     Nalezení Kódu obce a názevu obce.
     551929 - Andělská Hora
@@ -84,7 +85,7 @@ def kod_nazev_obce(table):
             })
     return kod_nazev_obce
 
-def volici_v_seznamu(stranka):
+def volici_obalky_hlasy(stranka) -> list:
     '''
     Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
     Bělá - 559 , 379, 375
@@ -104,7 +105,7 @@ def volici_v_seznamu(stranka):
             })
     return seznam
 
-def strany (stranka):
+def volebni_strana_hlasy(stranka) -> list:
     '''
     Najde seznam názvu volební strany a celkový počet platných hlasů
     '''
@@ -127,8 +128,8 @@ def vytvor_csv():
     '''
     vyber_uzemi = kod_nazev_obce(download_www())
     otaceni_stranek = stranky_webu(vyber_uzemi)
-    vyber_obce = volici_v_seznamu(otaceni_stranek)
-    kandidati = strany(otaceni_stranek)
+    vyber_obce = volici_obalky_hlasy(otaceni_stranek)
+    kandidati = volebni_strana_hlasy(otaceni_stranek)
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
