@@ -6,10 +6,6 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
 
 ![Image](https://github.com/user-attachments/assets/f9875e6e-3d55-49f8-a1c8-c10ddd0259c8)
 
-## Ukázka projektu
-  1. argument: `"https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"`
-  2. argument: `"vysledky_opava.csv"`
-
 ## Instalace
 
 - **Python**: Hlavní programovací jazyk.
@@ -24,6 +20,10 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
 Pro instalaci doporučuji použit nové virtuální prostředí a s nainstalovaným manažerem spustit následovně:
 ```pip3 -- version```
 ```pip3 instal -r requirements.txt```
+
+## Ukázka projektu
+  1. argument: `"https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"`
+  2. argument: `"vysledky_opava.csv"`
 
 ## Spouštění programu
 
