@@ -178,4 +178,3 @@ def vytvor_csv():
 if __name__ == '__main__':
     #spuštění programu
     vytvor_csv()
-
