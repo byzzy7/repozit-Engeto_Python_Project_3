@@ -13,7 +13,13 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
 ## Struktura projektu
 - `main.py` - Hlavní skript pro stažení a zpracování dat.
 - `vysledky_opava.csv` - Výstupní soubor obsahující zpracovaná data.
-- `requirements.txt` - Seznam závislostí potřebných pro spuštění projektu.
+- `requirements.txt` - Seznam závislostí potřebných pro spuštění projektu.\
+
+## Ukázka kódu
+
+`'Občanská demokratická strana': ['22', '48', '99', '37', '2', '46', '31', '164', '46', '5', '48'37', '14']
+'Řád národa - Vlastenecká unie': ['0', '3', '1', '0', '0', '0', '0', '1', '0', '0', '0', '0', '1', '0']
+'CESTA ODPOVĚDNÉ SPOLEČNOSTI': ['0', '1', '3', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0']`
 
 ## Použité technologie
 
