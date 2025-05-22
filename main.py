@@ -86,7 +86,7 @@ def kod_nazev_obce(table) -> list:
 
 def volici_obalky_hlasy(stranka: list) -> list:
     '''
-    Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
+    Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy) z vybrané obce.
     Bělá - 559 , 379, 375
     '''
     seznam = []
@@ -106,8 +106,8 @@ def volici_obalky_hlasy(stranka: list) -> list:
 
 def nazev_hlasy_volebni_strany(stranka: list) -> list:
     '''
-    Najde seznam názvu volební strany
-    Vyhleda celkový počet platných hlasů volebních stran
+    Najde název volebních stran a
+    vyhleda celkový počet platných hlasů volebních stran
     '''
 
     nazev = []
@@ -138,10 +138,10 @@ def urovnani_dat(data: list) -> dict:
 
     for slovo in [data]:
         for mnozina in slovo:
-            for klíč, hodnota in mnozina.items():
-                if klíč not in seznam:
-                    seznam[klíč] = []
-                seznam[klíč].append(hodnota)
+            for klic, hodnota in mnozina.items():
+                if klic not in seznam:
+                    seznam[klic] = []
+                seznam[klic].append(hodnota)
 
     return seznam
 
@@ -158,22 +158,24 @@ def vytvor_csv():
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
+        #názvy sloupců tabulky
         fieldnames = ["Kód obce", "Název obce", "Voliči v seznamu",
-                      "Vydané obálky", "Platné hlasy"] + keys_list
+                      "Vydané obálky", "Platné hlasy"] + keys_list # Název volební strany
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
-        writer.writeheader()  # Zapíše hlavičku
+        writer.writeheader()  # Hlavička tabulky
 
-        for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce, data):
+        for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce, zip(*data.values())):
             row = {
                 "Kód obce": uzemi.get("Kód obce", ""),
                 "Název obce": uzemi.get("Název obce", ""),
                 "Voliči v seznamu": obec.get("Voliči v seznamu", ""),
                 "Vydané obálky": obec.get("Vydané obálky", ""),
             }
+            for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
+                row[nazev_strany] = pocet_hlasu
             writer.writerow(row)
         print("Ukončuji web scraping")
-
 
 if __name__ == '__main__':
     #spuštění programu
