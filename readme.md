@@ -32,6 +32,13 @@ Spuštění souboru main.py v rámci přikázového řádku požaduje 2 argument
    python3 main.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105" "vysledky_opava.csv"
    ```
 
+## Průběh stahování
+`Stahuji data z vybraneho URL: https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105`
+
+`Ukládám do souboru: vysledky_opava.csv`
+
+`Ukončuji election-scraper`
+
 ## Struktura projektu
 - `main.py` - Hlavní skript pro stažení a zpracování dat.
 - `vysledky_opava.csv` - Výstupní soubor obsahující zpracovaná data.
@@ -48,14 +55,6 @@ Spuštění souboru main.py v rámci přikázového řádku požaduje 2 argument
 ```506214,Bolatice,3 533,2 309,,99,1,3,126,1,41,101,18,11```
 
 ```554197,Branka u Opavy,887,593,,37,0,0,60,0,12,59,0,1,4,1,1```
-
-
-## Průběh stahování
-`Stahuji data z vybraneho URL: https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105`
-
-`Ukládám do souboru: vysledky_opava.csv`
-
-`Ukončuji election-scraper`
 
 ## Zdroje
 **ENGETO**
