@@ -9,7 +9,7 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 import argparse
-
+from collections import defaultdict
 
 parser = argparse.ArgumentParser(
     prog="Web scraping. ČR volby 2017"
@@ -105,22 +105,46 @@ def volici_obalky_hlasy(stranka) -> list:
             })
     return seznam
 
-def volebni_strana_hlasy(stranka) -> list:
+def nazev_hlasy_volebni_strany(stranka):
     '''
-    Najde seznam názvu volební strany a celkový počet platných hlasů
+    Najde seznam názvu volební strany
+    Vyhleda celkový počet platných hlasů volebních stran
     '''
-    strana = []
+
+    nazev = []
 
     for radek in stranka:
         nazev_strany = radek.find("td", {"class": "overflow_name"})
-        hlasy_strany = radek.find("td", {"headers": "t1sa2 t1sb3"})
+        hlasy_tabulka_1 = radek.find("td", {"headers": "t1sa2 t1sb3"})
+        hlasy_tabulka_2 = radek.find("td", {"headers": "t2sa2 t2sb3"})
 
-        if nazev_strany and hlasy_strany:
-            strana.append({
-                "Název strany": nazev_strany.text.strip(),
-                "Hlasy strany": hlasy_strany.text.strip(),
+        if hlasy_tabulka_1:
+            nazev.append({
+                nazev_strany.text.strip(): hlasy_tabulka_1.text.strip(),
             })
-    return strana
+        if hlasy_tabulka_2:
+            nazev.append({
+                nazev_strany.text.strip(): hlasy_tabulka_2.text.strip(),
+            })
+
+    return nazev
+
+def pokus(list):
+    '''
+    hledá stejné klíče.
+    když se klíč shoduje, přídá hodnotu
+    '''
+
+    seznam = {}
+
+    for slovo in [list]:
+        for dictionary in slovo:
+            for klíč, hodnota in dictionary.items():
+                if klíč not in seznam:
+                    seznam[klíč] = []
+                seznam[klíč].append(hodnota)
+
+    return seznam
 
 def vytvor_csv():
     '''
@@ -129,7 +153,8 @@ def vytvor_csv():
     vyber_uzemi = kod_nazev_obce(download_www())
     otaceni_stranek = stranky_webu(vyber_uzemi)
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
-    kandidati = volebni_strana_hlasy(otaceni_stranek)
+    oo = nazev_hlasy_volebni_strany(otaceni_stranek)
+    pokus(oo)
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
@@ -148,7 +173,7 @@ def vytvor_csv():
                 "Platné hlasy": obec.get("Platné hlasy", ""),
             }
             writer.writerow(row)
-        print("Ukočuji web scraping")
+        print("Ukončuji web scraping")
 
 if __name__ == '__main__':
     #spuštění programu
