@@ -9,7 +9,6 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 import argparse
-from collections import defaultdict
 
 parser = argparse.ArgumentParser(
     prog="Web scraping. ČR volby 2017"
@@ -85,7 +84,7 @@ def kod_nazev_obce(table) -> list:
             })
     return kod_nazev_obce
 
-def volici_obalky_hlasy(stranka) -> list:
+def volici_obalky_hlasy(stranka: list) -> list:
     '''
     Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)z vybrané obce.
     Bělá - 559 , 379, 375
@@ -105,7 +104,7 @@ def volici_obalky_hlasy(stranka) -> list:
             })
     return seznam
 
-def nazev_hlasy_volebni_strany(stranka):
+def nazev_hlasy_volebni_strany(stranka: list) -> list:
     '''
     Najde seznam názvu volební strany
     Vyhleda celkový počet platných hlasů volebních stran
@@ -129,7 +128,7 @@ def nazev_hlasy_volebni_strany(stranka):
 
     return nazev
 
-def pokus(list):
+def urovnani_dat(data: list) -> dict:
     '''
     hledá stejné klíče.
     když se klíč shoduje, přídá hodnotu
@@ -137,9 +136,9 @@ def pokus(list):
 
     seznam = {}
 
-    for slovo in [list]:
-        for dictionary in slovo:
-            for klíč, hodnota in dictionary.items():
+    for slovo in [data]:
+        for mnozina in slovo:
+            for klíč, hodnota in mnozina.items():
                 if klíč not in seznam:
                     seznam[klíč] = []
                 seznam[klíč].append(hodnota)
@@ -153,8 +152,8 @@ def vytvor_csv():
     vyber_uzemi = kod_nazev_obce(download_www())
     otaceni_stranek = stranky_webu(vyber_uzemi)
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
-    oo = nazev_hlasy_volebni_strany(otaceni_stranek)
-    pokus(oo)
+    volebni_strana = nazev_hlasy_volebni_strany(otaceni_stranek)
+    data = urovnani_dat(volebni_strana)
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
@@ -173,6 +172,7 @@ def vytvor_csv():
                 "Platné hlasy": obec.get("Platné hlasy", ""),
             }
             writer.writerow(row)
+            writer.writerow(data)
         print("Ukončuji web scraping")
 
 if __name__ == '__main__':
