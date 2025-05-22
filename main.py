@@ -154,26 +154,26 @@ def vytvor_csv():
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
     volebni_strana = nazev_hlasy_volebni_strany(otaceni_stranek)
     data = urovnani_dat(volebni_strana)
+    keys_list = list(data.keys())
 
     print("Ukladam do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
         fieldnames = ["Kód obce", "Název obce", "Voliči v seznamu",
-                      "Vydané obálky", "Platné hlasy"]
+                      "Vydané obálky", "Platné hlasy"] + keys_list
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         writer.writeheader()  # Zapíše hlavičku
 
-        for uzemi, obec in zip(vyber_uzemi, vyber_obce):
+        for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce, data):
             row = {
                 "Kód obce": uzemi.get("Kód obce", ""),
                 "Název obce": uzemi.get("Název obce", ""),
                 "Voliči v seznamu": obec.get("Voliči v seznamu", ""),
                 "Vydané obálky": obec.get("Vydané obálky", ""),
-                "Platné hlasy": obec.get("Platné hlasy", ""),
             }
             writer.writerow(row)
-            writer.writerow(data)
         print("Ukončuji web scraping")
+
 
 if __name__ == '__main__':
     #spuštění programu
