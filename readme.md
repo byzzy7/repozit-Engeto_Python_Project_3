@@ -18,8 +18,8 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
   
 - Knihovný, které jsou použity v kódu jsou uložené requirements.txt.
 Pro instalaci doporučuji použit nové virtuální prostředí a s nainstalovaným manažerem spustit následovně:
-```pip3 -- version```
-```pip3 instal -r requirements.txt```
+- ```pip3 -- version```
+- ```pip3 instal -r requirements.txt```
 
 ## Ukázka projektu
   1. argument: `"https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=14&xnumnuts=8105"`
