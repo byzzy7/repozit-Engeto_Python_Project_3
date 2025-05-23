@@ -181,6 +181,7 @@ def vytvor_csv():
                 "Název obce": uzemi.get("Název obce", ""),
                 "Voliči v seznamu": obec.get("Voliči v seznamu", ""),
                 "Vydané obálky": obec.get("Vydané obálky", ""),
+                "Platné hlasy": obec.get("Platné hlasy", ""),
             }
             for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
                 row[nazev_strany] = pocet_hlasu
