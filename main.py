@@ -9,6 +9,7 @@ import requests
 import csv
 from bs4 import BeautifulSoup
 import argparse
+import re
 
 parser = argparse.ArgumentParser(
     prog="Projekt: Elections Scraper"
@@ -53,10 +54,13 @@ def stranky_webu(cislo) -> list:
     '''
     vsechny_radky = []
 
+    # Načtení kódu kraje a strany z URL
+    matches = re.findall(r'\d+', url)
+
     for obec in cislo:
-        #Dosadí číslo obce a načte novou stranku pro stahování dat.
-        stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj=14&xobec="
-              f"{int(obec["Kód obce"])}&xvyber=8105")
+        #Dosadí číslo obce, kraje, města a načte novou stranku pro stahování dat.
+        stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj={int(matches[2])}&xobec="
+              f"{int(obec[cislo_obce])}&xvyber={int(matches[3])}")
         odpoved = requests.get(stranka_webu)
         soup = BeautifulSoup(odpoved.text, features="html.parser")
         vsechny_tr = soup.find_all("tr")
@@ -80,8 +84,8 @@ def kod_nazev_obce(table) -> list:
         # Odstraní všechný jiné znaky. Výstup text
         if kod_obce and nazev_obce:
             kod_nazev_obce.append({
-                "Kód obce": kod_obce.text.strip(),
-                "Název obce": nazev_obce.text.strip(),
+                cislo_obce: kod_obce.text.strip(),
+                jmeno_obce: nazev_obce.text.strip(),
             })
     return kod_nazev_obce
 
@@ -103,9 +107,9 @@ def volici_obalky_hlasy(stranka: list) -> list:
         # Odstraní všechný jiné znaky. Výstup text
         if volici_seznam and vydane_obalky and platne_hlasy:
             seznam.append({
-                "Voliči v seznamu": volici_seznam.text.strip(),
-                "Vydané obálky": vydane_obalky.text.strip(),
-                "Platné hlasy": platne_hlasy.text.strip(),
+                volici: volici_seznam.text.strip(),
+                obalky: vydane_obalky.text.strip(),
+                hlas: platne_hlasy.text.strip(),
             })
     return seznam
 
@@ -131,7 +135,7 @@ def nazev_hlasy_volebni_strany(stranka: list) -> list:
                 nazev_strany.text.strip(): hlasy_tabulka_1.text.strip(),
             })
         #Odstraní všechný jiné znaky. Výstup text
-        if hlasy_tabulka_2:
+        if hlasy_tabulka_2 and nazev_strany:
             nazev.append({
                 nazev_strany.text.strip(): hlasy_tabulka_2.text.strip(),
             })
@@ -168,25 +172,33 @@ def vytvor_csv():
 
     print("Ukládám do souboru: vysledky_opava.csv")
     with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
-        #názvy sloupců tabulky
-        fieldnames = ["Kód obce", "Název obce", "Voliči v seznamu",
-                      "Vydané obálky", "Platné hlasy"] + strana_nazev # Název volební strany
+        #názvy sloupců tabulky + Název volební strany
+        fieldnames = [cislo_obce, jmeno_obce, volici, obalky, hlas] + strana_nazev
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         writer.writeheader()  # Hlavička tabulky
 
         for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce, zip(*data.values())):
             row = {
-                "Kód obce": uzemi.get("Kód obce", ""),
-                "Název obce": uzemi.get("Název obce", ""),
-                "Voliči v seznamu": obec.get("Voliči v seznamu", ""),
-                "Vydané obálky": obec.get("Vydané obálky", ""),
-                "Platné hlasy": obec.get("Platné hlasy", ""),
+                cislo_obce: uzemi.get(cislo_obce, ""),
+                jmeno_obce: uzemi.get(jmeno_obce, ""),
+                volici: obec.get(volici, ""),
+                obalky: obec.get(obalky, ""),
+                hlas: obec.get(hlas, ""),
             }
             for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
                 row[nazev_strany] = pocet_hlasu
             writer.writerow(row)
         print("Ukončuji election-scraper")
+
+# názvy sloupců
+cislo_obce = "Kód obce"
+jmeno_obce = "Název obce"
+volici = "Voliči v seznamu"
+obalky = "Vydané obálky"
+hlas = "Platné hlasy"
+
+
 
 if __name__ == '__main__':
     #spuštění programu
