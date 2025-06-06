@@ -192,13 +192,11 @@ def vytvor_csv():
         print("Ukončuji election-scraper")
 
 # názvy sloupců
-cislo_obce = "Kód obce"
-jmeno_obce = "Název obce"
+cislo_obce = "číslo"
+jmeno_obce = "název"
 volici = "Voliči v seznamu"
 obalky = "Vydané obálky"
 hlas = "Platné hlasy"
-
-
 
 if __name__ == '__main__':
     #spuštění programu
