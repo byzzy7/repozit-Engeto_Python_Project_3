@@ -59,8 +59,9 @@ def stranky_webu(cislo) -> list:
 
     for obec in cislo:
         #Dosadí číslo obce, kraje, města a načte novou stranku pro stahování dat.
-        stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk=CZ&xkraj={int(matches[2])}&xobec="
-              f"{int(obec[cislo_obce])}&xvyber={int(matches[3])}")
+        stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk"
+                        f"=CZ&xkraj={int(matches[2])}&xobec="
+                        f"{int(obec[cislo_obce])}&xvyber={int(matches[3])}")
         odpoved = requests.get(stranka_webu)
         soup = BeautifulSoup(odpoved.text, features="html.parser")
         vsechny_tr = soup.find_all("tr")
@@ -91,7 +92,8 @@ def kod_nazev_obce(table) -> list:
 
 def volici_obalky_hlasy(stranka: list) -> list:
     '''
-    Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy) z vybrané obce.
+    Najdi data (Voliči v seznamu, Vydané obalky, Platné hlasy)
+    z vybrané obce.
     Bělá - 559 , 379, 375
     '''
     seznam = []
@@ -155,7 +157,6 @@ def urovnani_dat(data: list) -> dict:
                 if klic not in seznam:
                     seznam[klic] = []
                 seznam[klic].append(hodnota)
-
     return seznam
 
 def vytvor_csv():
@@ -170,14 +171,17 @@ def vytvor_csv():
     strana_nazev = list(data.keys())
 
     print("Ukládám do souboru: vysledky_opava.csv")
-    with open("vysledky_opava.csv", "w", newline="", encoding="utf-8") as file:
+    with (open("vysledky_opava.csv", "w", newline="", encoding="utf-8")
+          as file):
         #názvy sloupců tabulky + Název volební strany
-        fieldnames = [cislo_obce, jmeno_obce, volici, obalky, hlas] + strana_nazev
+        fieldnames = [cislo_obce, jmeno_obce, volici, obalky, hlas
+                      ] + strana_nazev
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         writer.writeheader()  # Hlavička tabulky
 
-        for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce, zip(*data.values())):
+        for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce,
+                                      zip(*data.values())):
             row = {
                 cislo_obce: uzemi.get(cislo_obce, ""),
                 jmeno_obce: uzemi.get(jmeno_obce, ""),
