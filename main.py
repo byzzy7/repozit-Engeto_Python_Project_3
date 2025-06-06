@@ -54,7 +54,7 @@ def stranky_webu(cislo) -> list:
     '''
     vsechny_radky = []
 
-    # Načtení kódu kraje a strany z URL
+    # Načtení číselných kódu z URL [2017, 311, 3, 3102]
     matches = re.findall(r'\d+', url)
 
     for obec in cislo:
@@ -139,7 +139,6 @@ def nazev_hlasy_volebni_strany(stranka: list) -> list:
             nazev.append({
                 nazev_strany.text.strip(): hlasy_tabulka_2.text.strip(),
             })
-
     return nazev
 
 def urovnani_dat(data: list) -> dict:
