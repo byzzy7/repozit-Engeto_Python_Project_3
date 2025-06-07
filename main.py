@@ -10,19 +10,6 @@ import csv
 from bs4 import BeautifulSoup
 import argparse
 
-parser = argparse.ArgumentParser(
-    prog="Projekt: Elections Scraper"
-)
-parser.add_argument(
-    "url", type=str, help="Stahuji data z vybraného url:"
-)
-parser.add_argument(
-    "vysledky_opava.csv", help="Ukladaní dat do csv:"
-)
-args = parser.parse_args()
-url = args.url
-print(f"Stahuji data z vybraneho url: {url}")
-
 def download_www():
     """
     Stáhne obsah webové stránky a vrátí BeautifulSoup objekt.
@@ -210,6 +197,20 @@ def vytvor_csv():
                     row[nazev_strany] = pocet_hlasu
             writer.writerow(row)
         print("Ukončuji election-scraper")
+
+# Argumenty pro spuštění programu
+parser = argparse.ArgumentParser(
+    prog="Projekt: Elections Scraper"
+)
+parser.add_argument(
+    "url", type=str, help="Stahuji data z vybraného url:"
+)
+parser.add_argument(
+    "vysledky_opava.csv", help="Ukladaní dat do csv:"
+)
+args = parser.parse_args()
+url = args.url
+print(f"Stahuji data z vybraneho url: {url}")
 
 # názvy sloupců
 sloupec_A = "číslo"
