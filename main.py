@@ -64,11 +64,13 @@ def stranky_webu(soup) -> list:
     odkaz obci  - ps311/vysledky?xjazyk=CZ&xkraj=1&xobec=551929&xvyber=0
     for cyklus spojí odkazy
     '''
+
     vsechny_radky = []
 
     zakladni_url = url[:35]
     odkaz_obci = []
 
+    # Vyhledává odkazy na obce
     for i in soup.find_all('a', href=True):
         if 'href' in i.attrs and 'ps311' in i['href']:
             odkaz_obci.append(i['href'])
