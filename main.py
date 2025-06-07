@@ -58,11 +58,10 @@ def nazev_csv(soup):
 
 def stranky_webu(soup) -> list:
     '''
-    otáčí všechny stránky
-    Najde odkazy na obce a vrátí seznam řádků.
+    Najde odkazy na obce.
     zakldni url - https://www.volby.cz/pls/
-    odkaz obci  - ps311/vysledky?xjazyk=CZ&xkraj=1&xobec=551929&xvyber=0
-    for cyklus spojí odkazy
+    odkaz obce  - ps311/vysledky?xjazyk=CZ&xkraj=1&xobec=551929&xvyber=0
+    for cyklus načte stranky obci
     '''
 
     vsechny_radky = []
@@ -207,7 +206,8 @@ def vytvor_csv():
                 sloupec_E: obec.get(sloupec_E, ""),
             }
             for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
-                row[nazev_strany] = pocet_hlasu
+                if nazev_strany and pocet_hlasu:
+                    row[nazev_strany] = pocet_hlasu
             writer.writerow(row)
         print("Ukončuji election-scraper")
 
