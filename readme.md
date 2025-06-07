@@ -15,7 +15,6 @@ Volby do Poslanecké sněmovny Parlamentu České republiky konané ve dnech 20.
   - `BeautifulSoup` (z balíčku `beautifulsoup4`) - Pro analýzu HTML.
   - `csv` - Pro práci s CSV soubory.
   - `argparse` - Rozhraní pro příkazovou řádku.
-  - `re` - Pro práci s regulárními výrazy.
   
 - Knihovný, které jsou použity v kódu jsou uložené requirements.txt.
 Pro instalaci doporučuji použit nové virtuální prostředí a s nainstalovaným manažerem spustit následovně:
