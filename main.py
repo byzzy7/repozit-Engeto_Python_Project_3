@@ -10,7 +10,7 @@ import csv
 from bs4 import BeautifulSoup
 import argparse
 
-def download_www():
+def stahni_www():
     """
     Stáhne obsah webové stránky a vrátí BeautifulSoup objekt.
     """
@@ -20,7 +20,7 @@ def download_www():
     soup = BeautifulSoup(odpoved.text, features="html.parser")
     return soup
 
-def find_table(soup):
+def najdi_tabulku(soup):
     """
     Najde tabulku.
     """
@@ -52,7 +52,6 @@ def stranky_webu(soup) -> list:
     '''
 
     vsechny_radky = []
-
     zakladni_url = url[:35]
     odkaz_obci = []
 
@@ -165,13 +164,13 @@ def vytvor_csv():
     '''
     Vytvoří csv soubor
     '''
-    vyber_uzemi = kod_nazev_obce(download_www())
-    otaceni_stranek = stranky_webu(download_www())
+    vyber_uzemi = kod_nazev_obce(stahni_www())
+    otaceni_stranek = stranky_webu(stahni_www())
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
     volebni_strana = nazev_hlasy_volebni_strany(otaceni_stranek)
     data = urovnani_dat(volebni_strana)
     strana_nazev = list(data.keys())
-    pojmenovani_csv = nazev_csv(download_www())
+    pojmenovani_csv = nazev_csv(stahni_www())
 
     print(f"Ukládám do souboru: vysledky_{pojmenovani_csv}.csv")
     with (open(f"vysledky_{pojmenovani_csv}.csv", "w", newline="", encoding="utf-8")
