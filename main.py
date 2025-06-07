@@ -46,31 +46,36 @@ def nazev_csv(soup):
     Najde název název Města a použijeho k
     pojmenování csv souboru.
     Odstraní diakritiku a převede na malá písmena.
+    [7:] - odstraní název "Okres:"
+    Okres: Český Krumlov = cesky_krumlov
     """
     nazev_csv = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
                  .replace("é", "e").replace("í", "i").replace("ó", "o")
                  .replace("ú", "u").replace("ů", "u").replace("ě", "e")
                  .replace("š", "s").replace("č", "c").replace("ř", "r")
-                 .replace("ž", "z").replace("ý", "y").replace(" ", "_"))
-    return nazev_csv[7:]
+                 .replace("ž", "z").replace("ý", "y").replace(" ", "_"))[7:]
+    return nazev_csv
 
-def stranky_webu(cislo) -> list:
+def stranky_webu(soup) -> list:
     '''
-    otáčí všechny stránky obci.
-    "int(obec["Kód obce"])" - cislo obce
-    Běla ......... X
-    Bohuslavice .. X
-    ..
-    ..
-    Závada ....... X
+    otáčí všechny stránky
+    Najde odkazy na obce a vrátí seznam řádků.
+    zakldni url - https://www.volby.cz/pls/
+    odkaz obci  - ps311/vysledky?xjazyk=CZ&xkraj=1&xobec=551929&xvyber=0
+    for cyklus spojí odkazy
     '''
     vsechny_radky = []
 
-    for obec in cislo:
-        #Dosadí číslo obce, kraje, města a načte novou stranku pro stahování dat.
-        stranka_webu = (f"https://www.volby.cz/pls/ps2017nss/ps311?xjazyk"
-                        f"=CZ&xkraj=14&xobec="
-                        f"{int(obec[sloupec_A])}&xvyber=8105")
+    zakladni_url = url[:35]
+    odkaz_obci = []
+
+    for i in soup.find_all('a', href=True):
+        if 'href' in i.attrs and 'ps311' in i['href']:
+            odkaz_obci.append(i['href'])
+
+    for obec in odkaz_obci:
+        #URL pro každou obec
+        stranka_webu = zakladni_url + obec
         odpoved = requests.get(stranka_webu)
         soup = BeautifulSoup(odpoved.text, features="html.parser")
         vsechny_tr = soup.find_all("tr")
@@ -173,7 +178,7 @@ def vytvor_csv():
     Vytvoří csv soubor
     '''
     vyber_uzemi = kod_nazev_obce(download_www())
-    otaceni_stranek = stranky_webu(vyber_uzemi)
+    otaceni_stranek = stranky_webu(download_www())
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
     volebni_strana = nazev_hlasy_volebni_strany(otaceni_stranek)
     data = urovnani_dat(volebni_strana)
@@ -193,11 +198,11 @@ def vytvor_csv():
         for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce,
                                       zip(*data.values())):
             row = {
-                cislo_obce: uzemi.get(sloupec_A, ""),
-                jmeno_obce: uzemi.get(sloupec_B, ""),
-                volici: obec.get(sloupec_C, ""),
-                obalky: obec.get(sloupec_D, ""),
-                hlas: obec.get(sloupec_E, ""),
+                sloupec_A: uzemi.get(sloupec_A, ""),
+                sloupec_B: uzemi.get(sloupec_B, ""),
+                sloupec_C: obec.get(sloupec_C, ""),
+                sloupec_D: obec.get(sloupec_D, ""),
+                sloupec_E: obec.get(sloupec_E, ""),
             }
             for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
                 row[nazev_strany] = pocet_hlasu
