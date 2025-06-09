@@ -10,6 +10,22 @@ import csv
 from bs4 import BeautifulSoup
 import argparse
 
+def argumenty():
+    # Argumenty pro spuštění programu
+    global url
+    parser = argparse.ArgumentParser(
+        prog="Projekt: Elections Scraper"
+    )
+    parser.add_argument(
+        "url", type=str, help="Stahuji data z vybraného url:"
+    )
+    parser.add_argument(
+        "vysledky_opava.csv", help="Ukladaní dat do csv:"
+    )
+    args = parser.parse_args()
+    url = args.url
+    print(f"Stahuji data z vybraneho url: {url}")
+
 def stahni_www():
     """
     Stáhne obsah webové stránky a vrátí BeautifulSoup objekt.
@@ -36,12 +52,12 @@ def nazev_csv(soup):
     [7:] - odstraní název "Okres:"
     Okres: Český Krumlov = cesky_krumlov
     """
-    nazev = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
+    nazev_pro_csv = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
                  .replace("é", "e").replace("í", "i").replace("ó", "o")
                  .replace("ú", "u").replace("ů", "u").replace("ě", "e")
                  .replace("š", "s").replace("č", "c").replace("ř", "r")
                  .replace("ž", "z").replace("ý", "y").replace(" ", "_"))[7:]
-    return nazev
+    return nazev_pro_csv
 
 def stranky_webu(soup) -> list:
     '''
@@ -74,7 +90,7 @@ def kod_nazev_obce(table) -> list:
     Nalezení Kódu obce a názevu obce.
     551929 - Andělská Hora
     '''
-    kod_nazev_obce = []
+    seznam_obce = []
 
     vsechny_tr = table.find_all("tr")
     for radek in vsechny_tr:
@@ -85,11 +101,11 @@ def kod_nazev_obce(table) -> list:
 
         # Odstraní všechný jiné znaky. Výstup text
         if kod_obce and nazev_obce:
-            kod_nazev_obce.append({
+            seznam_obce.append({
                 sloupec_A: kod_obce.text.strip(),
                 sloupec_B: nazev_obce.text.strip(),
             })
-    return kod_nazev_obce
+    return seznam_obce
 
 def volici_obalky_hlasy(stranka: list) -> list:
     '''
@@ -164,6 +180,7 @@ def vytvor_csv():
     '''
     Vytvoří csv soubor
     '''
+    argumenty()
     vyber_uzemi = kod_nazev_obce(stahni_www())
     otaceni_stranek = stranky_webu(stahni_www())
     vyber_obce = volici_obalky_hlasy(otaceni_stranek)
@@ -197,20 +214,9 @@ def vytvor_csv():
             writer.writerow(row)
         print("Ukončuji election-scraper")
 
-# Argumenty pro spuštění programu
-parser = argparse.ArgumentParser(
-    prog="Projekt: Elections Scraper"
-)
-parser.add_argument(
-    "url", type=str, help="Stahuji data z vybraného url:"
-)
-parser.add_argument(
-    "vysledky_opava.csv", help="Ukladaní dat do csv:"
-)
-args = parser.parse_args()
-url = args.url
-print(f"Stahuji data z vybraneho url: {url}")
 
+# Url čeká na zadání z příkazové řádky
+url = ""
 # proměnné pro názvy sloupců
 sloupec_A = "číslo"
 sloupec_B = "název"
