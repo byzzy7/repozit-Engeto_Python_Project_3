@@ -36,17 +36,17 @@ def nazev_csv(soup):
     [7:] - odstraní název "Okres:"
     Okres: Český Krumlov = cesky_krumlov
     """
-    nazev_csv = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
+    nazev = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
                  .replace("é", "e").replace("í", "i").replace("ó", "o")
                  .replace("ú", "u").replace("ů", "u").replace("ě", "e")
                  .replace("š", "s").replace("č", "c").replace("ř", "r")
                  .replace("ž", "z").replace("ý", "y").replace(" ", "_"))[7:]
-    return nazev_csv
+    return nazev
 
 def stranky_webu(soup) -> list:
     '''
     Najde odkazy na obce.
-    zakldni url - https://www.volby.cz/pls/
+    zakldni url - https://www.volby.cz/pls/ps2017nss/
     odkaz obce  - ps311/vysledky?xjazyk=CZ&xkraj=1&xobec=551929&xvyber=0
     for cyklus načte stranky obci
     '''
@@ -211,12 +211,12 @@ args = parser.parse_args()
 url = args.url
 print(f"Stahuji data z vybraneho url: {url}")
 
-# názvy sloupců
+# proměnné pro názvy sloupců
 sloupec_A = "číslo"
 sloupec_B = "název"
 sloupec_C = "Voliči v seznamu"
 sloupec_D = "Vydané obálky"
-sloupec_E = "Platné hlasy"
+sloupec_E = "Odevzdané obálky"
 
 if __name__ == '__main__':
     #spuštění programu
