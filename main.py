@@ -52,11 +52,15 @@ def nazev_csv(soup):
     [7:] - odstraní název "Okres:"
     Okres: Český Krumlov = cesky_krumlov
     """
-    nazev_pro_csv = (soup.find_all("h3")[1].text.strip().lower().replace("á", "a")
-                 .replace("é", "e").replace("í", "i").replace("ó", "o")
-                 .replace("ú", "u").replace("ů", "u").replace("ě", "e")
-                 .replace("š", "s").replace("č", "c").replace("ř", "r")
-                 .replace("ž", "z").replace("ý", "y").replace(" ", "_"))[7:]
+    nazev_pro_csv = (soup.find_all("h3")[1].text.strip().lower()
+                     .replace("á", "a").replace("é", "e")
+                     .replace("í", "i").replace("ó", "o")
+                     .replace("ú", "u").replace("ů", "u")
+                     .replace("ě", "e").replace("š", "s")
+                     .replace("č", "c").replace("ř", "r")
+                     .replace("ž", "z").replace("ý", "y")
+                     .replace(" ", "_")
+                     )[7:]
     return nazev_pro_csv
 
 def stranky_webu(soup) -> list:
@@ -190,11 +194,11 @@ def vytvor_csv():
     pojmenovani_csv = nazev_csv(stahni_www())
 
     print(f"Ukládám do souboru: vysledky_{pojmenovani_csv}.csv")
-    with (open(f"vysledky_{pojmenovani_csv}.csv", "w", newline="", encoding="utf-8")
-          as file):
+    with open(f"vysledky_{pojmenovani_csv}.csv", "w",
+               newline="", encoding="utf-8") as file:
         #názvy sloupců tabulky + Název volební strany
-        fieldnames = [sloupec_A, sloupec_B, sloupec_C, sloupec_D, sloupec_E
-                      ] + strana_nazev
+        fieldnames = [sloupec_A, sloupec_B, sloupec_C, sloupec_D,
+                      sloupec_E] + strana_nazev
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         writer.writeheader()  # Hlavička tabulky
