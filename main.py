@@ -5,26 +5,29 @@ author: Lukáš Bystroň
 email: lbystron@gmail.com
 """
 
-import requests
-import csv
-from bs4 import BeautifulSoup
 import argparse
+import csv
+
+import requests
+from bs4 import BeautifulSoup
+from unidecode import unidecode
+
 
 def argumenty():
     # Argumenty pro spuštění programu
     global url
     parser = argparse.ArgumentParser(
-        prog="Projekt: Elections Scraper"
+        prog='Projekt: Elections Scraper'
     )
     parser.add_argument(
-        "url", type=str, help="Stahuji data z vybraného url:"
+        'url', type=str, help='Stahuji data z vybraného url:'
     )
     parser.add_argument(
-        "vysledky_opava.csv", help="Ukladaní dat do csv:"
+        'vysledky_opava.csv', help='Ukladaní dat do csv:'
     )
     args = parser.parse_args()
     url = args.url
-    print(f"Stahuji data z vybraneho url: {url}")
+    print(f'Stahuji data z vybraneho url: {url}')
 
 def stahni_www():
     """
@@ -33,7 +36,7 @@ def stahni_www():
     # Stažení obsahu stránky
     odpoved = requests.get(url)
     odpoved.raise_for_status()  # Kontrola HTTP odpovědi
-    soup = BeautifulSoup(odpoved.text, features="html.parser")
+    soup = BeautifulSoup(odpoved.text, features='html.parser')
     return soup
 
 def najdi_tabulku(soup):
@@ -41,7 +44,7 @@ def najdi_tabulku(soup):
     Najde tabulku.
     """
     # Najít tabulku
-    table = soup.find_all("table", {"class": "table"})
+    table = soup.find_all('table', {'class': 'table'})
     return table
 
 def nazev_csv(soup):
@@ -52,16 +55,9 @@ def nazev_csv(soup):
     [7:] - odstraní název "Okres:"
     Okres: Český Krumlov = cesky_krumlov
     """
-    nazev_pro_csv = (soup.find_all("h3")[1].text.strip().lower()
-                     .replace("á", "a").replace("é", "e")
-                     .replace("í", "i").replace("ó", "o")
-                     .replace("ú", "u").replace("ů", "u")
-                     .replace("ě", "e").replace("š", "s")
-                     .replace("č", "c").replace("ř", "r")
-                     .replace("ž", "z").replace("ý", "y")
-                     .replace(" ", "_")
-                     )[7:]
-    return nazev_pro_csv
+    nazev_pro_csv = soup.find_all('h3')[1].text.strip().lower()[7:]
+    cisty_nazev = unidecode(nazev_pro_csv, 'utf-8')
+    return cisty_nazev
 
 def stranky_webu(soup) -> list:
     '''
@@ -84,10 +80,15 @@ def stranky_webu(soup) -> list:
         #URL pro každou obec
         stranka_webu = zakladni_url + obec
         odpoved = requests.get(stranka_webu)
-        soup = BeautifulSoup(odpoved.text, features="html.parser")
-        vsechny_tr = soup.find_all("tr")
+        soup = BeautifulSoup(odpoved.text, features='html.parser')
+        vsechny_tr = soup.find_all('tr')
         vsechny_radky.extend(vsechny_tr)
     return vsechny_radky
+
+def nazev_sloupcu(stranka):
+    xx = stranka
+    dd = xx.find('th', {'id': 'sa2'}).text.strip()
+    return print(dd)
 
 def kod_nazev_obce(table) -> list:
     '''
@@ -96,12 +97,12 @@ def kod_nazev_obce(table) -> list:
     '''
     seznam_obce = []
 
-    vsechny_tr = table.find_all("tr")
+    vsechny_tr = table.find_all('tr')
     for radek in vsechny_tr:
         #Najdi číslo obce
-        kod_obce = radek.find("td", {"class": "cislo"})
+        kod_obce = radek.find('td', {'class': 'cislo'})
         #Najdi název obce
-        nazev_obce = radek.find("td", {"class": "overflow_name"})
+        nazev_obce = radek.find('td', {'class': 'overflow_name'})
 
         # Odstraní všechný jiné znaky. Výstup text
         if kod_obce and nazev_obce:
@@ -121,11 +122,11 @@ def volici_obalky_hlasy(stranka: list) -> list:
 
     for radek in stranka:
         #Najdi počet voličů v seznamu
-        volici_seznam = radek.find("td", {"headers": "sa2"})
+        volici_seznam = radek.find('td', {'headers': 'sa2'})
         #Najdi počet vydaných obálek
-        vydane_obalky = radek.find("td", {"headers": "sa3"})
+        vydane_obalky = radek.find('td', {'headers': 'sa3'})
         #Najdi počet platných hlasů
-        platne_hlasy = radek.find("td", {"headers": "sa6"})
+        platne_hlasy = radek.find('td', {'headers': 'sa6'})
 
         # Odstraní všechný jiné znaky. Výstup text
         if volici_seznam and vydane_obalky and platne_hlasy:
@@ -146,11 +147,11 @@ def nazev_hlasy_volebni_strany(stranka: list) -> list:
 
     for radek in stranka:
         #Najdi název volební strany
-        nazev_strany = radek.find("td", {"class": "overflow_name"})
+        nazev_strany = radek.find('td', {'class': 'overflow_name'})
         #Najdi v první tabulce hlasy
-        hlasy_tabulka_1 = radek.find("td", {"headers": "t1sa2 t1sb3"})
+        hlasy_tabulka_1 = radek.find('td', {'headers': 't1sa2 t1sb3'})
         #Najdi v druhé tabulce hlasy
-        hlasy_tabulka_2 = radek.find("td", {"headers": "t2sa2 t2sb3"})
+        hlasy_tabulka_2 = radek.find('td', {'headers': 't2sa2 t2sb3'})
 
         #Odstraní všechný jiné znaky. Výstup text
         if hlasy_tabulka_1:
@@ -192,41 +193,42 @@ def vytvor_csv():
     data = urovnani_dat(volebni_strana)
     strana_nazev = list(data.keys())
     pojmenovani_csv = nazev_csv(stahni_www())
+    nazev_sloupcu(stranky_webu(stahni_www()))
 
-    print(f"Ukládám do souboru: vysledky_{pojmenovani_csv}.csv")
-    with open(f"vysledky_{pojmenovani_csv}.csv", "w",
-               newline="", encoding="utf-8") as file:
+    print(f'Ukládám do souboru: vysledky_{pojmenovani_csv}.csv')
+    with open(f'vysledky_{pojmenovani_csv}.csv', 'w',
+               newline='', encoding='utf-8') as soubor:
         #názvy sloupců tabulky + Název volební strany
-        fieldnames = [sloupec_A, sloupec_B, sloupec_C, sloupec_D,
+        nazev_sloupce = [sloupec_A, sloupec_B, sloupec_C, sloupec_D,
                       sloupec_E] + strana_nazev
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer = csv.DictWriter(soubor, fieldnames=nazev_sloupce)
 
         writer.writeheader()  # Hlavička tabulky
 
         for uzemi, obec, hlasy in zip(vyber_uzemi, vyber_obce,
                                       zip(*data.values())):
             row = {
-                sloupec_A: uzemi.get(sloupec_A, ""),
-                sloupec_B: uzemi.get(sloupec_B, ""),
-                sloupec_C: obec.get(sloupec_C, ""),
-                sloupec_D: obec.get(sloupec_D, ""),
-                sloupec_E: obec.get(sloupec_E, ""),
+                sloupec_A: uzemi.get(sloupec_A, ''),
+                sloupec_B: uzemi.get(sloupec_B, ''),
+                sloupec_C: obec.get(sloupec_C, ''),
+                sloupec_D: obec.get(sloupec_D, ''),
+                sloupec_E: obec.get(sloupec_E, ''),
             }
             for nazev_strany, pocet_hlasu in zip(data.keys(), hlasy):
                 if nazev_strany and pocet_hlasu:
                     row[nazev_strany] = pocet_hlasu
             writer.writerow(row)
-        print("Ukončuji election-scraper")
+        print('Ukončuji election-scraper')
 
 
 # Url čeká na zadání z příkazové řádky
-url = ""
+url = ''
 # proměnné pro názvy sloupců
-sloupec_A = "číslo"
-sloupec_B = "název"
-sloupec_C = "Voliči v seznamu"
-sloupec_D = "Vydané obálky"
-sloupec_E = "Odevzdané obálky"
+sloupec_A = 'číslo'
+sloupec_B = 'název'
+sloupec_C = 'Voliči v seznamu'
+sloupec_D = 'Vydané obálky'
+sloupec_E = 'Odevzdané obálky'
 
 if __name__ == '__main__':
     #spuštění programu
