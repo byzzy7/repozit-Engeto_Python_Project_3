@@ -85,10 +85,6 @@ def stranky_webu(soup) -> list:
         vsechny_radky.extend(vsechny_tr)
     return vsechny_radky
 
-def nazev_sloupcu(stranka):
-    xx = stranka
-    dd = xx.find('th', {'id': 'sa2'}).text.strip()
-    return print(dd)
 
 def kod_nazev_obce(table) -> list:
     '''
@@ -193,7 +189,6 @@ def vytvor_csv():
     data = urovnani_dat(volebni_strana)
     strana_nazev = list(data.keys())
     pojmenovani_csv = nazev_csv(stahni_www())
-    nazev_sloupcu(stranky_webu(stahni_www()))
 
     print(f'Ukládám do souboru: vysledky_{pojmenovani_csv}.csv')
     with open(f'vysledky_{pojmenovani_csv}.csv', 'w',
